@@ -32,7 +32,6 @@
            * [`schema`](#schema)
          * [`Object` Validators](#object-validators)
            * [`unknownKeys`](#unknownkeys)
-           * [`allowUnknownKeys`](#allowunknownkeys-deprecated) [deprecated]
          * [`Array` Validators](#array-validators)
            * [`len`](#len)
            * [`unique`](#unique)
@@ -356,12 +355,6 @@ In the above example, if you validated the following object, the `why` key would
     }
 
 > Default is `deny`.
-
-##### `allowUnknownKeys` [deprecated]
-
-Type: `Boolean`
-
-**This validator has been deprecated in favour of [`unknownKeys`](#unknownkeys), and will be removed in the next major version. Please update your schemas.**
 
 #### `Array` Validators
 
