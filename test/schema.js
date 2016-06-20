@@ -173,19 +173,5 @@ describe('schema', function() {
 		testSyncAndAsync ('should come back with custom as an array.', { custom: [ function() {} ] }, function(s) {
 			expect(s).to.have.property('custom').to.be.an('array');
 		});
-		describe('allowUnknownKeys [deprecated]', function() {
-			testSyncAndAsync ('should come back with unknownKeys set to \'allow\' if allowUnknownKeys is \'true\'.', {
-				type: Object,
-				allowUnknownKeys: true
-			}, function(s) {
-				expect(s.unknownKeys).to.equal('allow');
-			});
-			testSyncAndAsync ('should come back with unknownKeys set to \'deny\' if allowUnknownKeys is \'false\'.', {
-				type: Object,
-				allowUnknownKeys: false
-			}, function(s) {
-				expect(s.unknownKeys).to.equal('deny');
-			});
-		});
 	});
 });

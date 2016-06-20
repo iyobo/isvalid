@@ -492,49 +492,6 @@ describe('validate', function() {
 				});
 			});
 		});
-		describe('allowUnknownKeys [deprecated]', function() {
-			it ('should come back with error with old validator name if allowUnknownKeys was converted to unknownKeys.', function(done) {
-				isvalid({
-					awesome: true,
-					why: 'It just is!'
-				}, {
-					type: Object,
-					allowUnknownKeys: false,
-					schema: {
-						awesome: Boolean
-					}
-				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
-					expect(err).to.have.property('validator').equal('allowUnknownKeys');
-					expect(err).to.have.property('message').equal('Unknown key.');
-					expect(err).to.have.property('keyPath').of.length(1);
-					done();
-				});
-			});
-			describe('#errors', function() {
-				it ('should come back with error with old validator name and custom message if allowUnknownKeys was converted to unknownKeys.', function(done) {
-					isvalid({
-						awesome: true,
-						why: 'It just is!'
-					}, {
-						type: Object,
-						allowUnknownKeys: false,
-						schema: {
-							awesome: Boolean
-						},
-						errors: {
-							allowUnknownKeys: 'Not allowed.'
-						}
-					}, function(err, validData) {
-						expect(err).to.be.instanceof(ValidationError);
-						expect(err).to.have.property('validator').equal('allowUnknownKeys');
-						expect(err).to.have.property('message').equal('Not allowed.');
-						expect(err).to.have.property('keyPath').of.length(1);
-						done();
-					});
-				});
-			});
-		});
 	});
 	describe('array validator', function() {
 		commonTests.all(Array, [], 123);
