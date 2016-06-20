@@ -1,7 +1,7 @@
 {
   "name": "isvalid",
   "version": "2.0.0-dev",
-  "description": "Async JSON validation library for node.js.",
+  "description": "Async JSON validation library for node.js - with support for express and connect.",
   "main": "./index.js",
   "keywords": [
     "schema",
