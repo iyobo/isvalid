@@ -213,6 +213,7 @@ var commonTests = {
 				}, function(err, validData) {
 					expect(err).to.be.instanceof(ValidationError);
 					expect(err).to.have.property('validator').equal('custom');
+					expect(err).to.have.property('message').equal('This is an error');
 					done();
 				});
 			});
@@ -288,6 +289,7 @@ var commonTests = {
 				}, function(err, validData) {
 					expect(err).to.be.instanceof(ValidationError);
 					expect(err).to.have.property('validator').equal('custom');
+					expect(err).to.have.property('message').equal('Stop here');
 					done();
 				});
 			});
@@ -304,12 +306,12 @@ describe('validate', function() {
 	it ('should throw an error if schema is not provided.', function() {
 		expect(function() {
 			isvalid({}, undefined, undefined);
-		}).to.throw(Error);
+		}).to.throw(Error, 'Missing parameter schema.');
 	});
 	it ('should throw an error if callback is not provided.', function() {
 		expect(function() {
 			isvalid({}, {}, undefined);
-		}).to.throw(Error);
+		}).to.throw(Error, 'Missing parameter fn.');
 	});
 	describe('type conversion', function() {
 		it ('should convert string values into numbers if string contains a number.', function(done) {
@@ -330,6 +332,7 @@ describe('validate', function() {
 			isvalid('abc', Number, function(err, validData) {
 				expect(err).to.be.instanceof(ValidationError);
 				expect(err).to.have.property('validator').equal('type');
+				expect(err).to.have.property('message').equal('Is not of type Number.');
 				done();
 			});
 		});
@@ -351,6 +354,7 @@ describe('validate', function() {
 			isvalid('123', Boolean, function(err, validData) {
 				expect(err).to.be.instanceof(ValidationError);
 				expect(err).to.have.property('validator').equal('type');
+				expect(err).to.have.property('message').equal('Is not of type Boolean.');
 				done();
 			});
 		});
@@ -365,6 +369,7 @@ describe('validate', function() {
 			isvalid('19/10/14 2:24:42', Date, function(err, validData) {
 				expect(err).to.be.instanceof(ValidationError);
 				expect(err).to.have.property('validator').equal('type');
+				expect(err).to.have.property('message').equal('Is not a valid Date string.');
 				done();
 			});
 		});
