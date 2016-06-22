@@ -1,6 +1,6 @@
 'use strict';
 
-var validate = require('../../../lib/middleware.js'),
+var validate = require('../../../lib/middleware/'),
 	express = require('express'),
 	bodyParser = require('body-parser');
 
