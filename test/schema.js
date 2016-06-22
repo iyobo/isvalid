@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect,
 	formalize = require('../lib/schema.js').formalize,
-	SchemaError = require('../lib/errors/SchemaError.js');
+	SchemaError = require('../lib/errors/schema.js');
 
 var testSyncAndAsync = function(desc, s, expects) {
 	it ('[async] ' + desc, function(done) {
