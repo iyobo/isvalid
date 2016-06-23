@@ -4,62 +4,133 @@ var expect = require('chai').expect,
 	formalize = require('../lib/formalize.js'),
 	SchemaError = require('../lib/errors/schema.js');
 
-var testSyncAndAsync = function(desc, s, expects) {
-	it ('[async] ' + desc, function(done) {
+var testSyncAndAsync = function(asyncDesc, syncDesc, s, expects) {
+	if (typeof expects === 'undefined') {
+		expects = s;
+		s = syncDesc;
+		syncDesc = asyncDesc;
+	}
+	it ('[async] ' + asyncDesc, function(done) {
 		formalize(s, function(err, s) {
 			expects(err, s);
 			done();
 		});
 	});
-	it ('[sync]	' + desc, function() {
+	it ('[sync]	' + syncDesc, function() {
 		try {
 			s = formalize(s);
+			expects(null, s);
 		} catch (err) {
-			expects(err, s);
+			expects(err, null);
 		}
 	});
 };
 
 describe('formalizer', function() {
-	testSyncAndAsync ('should come back with error if array shortcut contains no object.', [], function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Array must have exactly one schema.');
-	});
-	testSyncAndAsync ('should come back with error if schema is garbage value.', 123, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type 123.');
-	});
-	testSyncAndAsync ('should come back with error if required is not a String or Boolean.', { type: String, required: 123 }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'required\' must be of type(s) Boolean, String.');
-	});
-	testSyncAndAsync ('should come back with error if required is a String but not \'implicit\'.', { type: String, required: 'test' }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'required\' must be a Boolean or String of value \'implicit\'.');
-	});
-	testSyncAndAsync ('should come back with error if type is String and match is non-RegExp.', { type: String, match: 'test' }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'match\' must be of type(s) RegExp.');
-	});
-	testSyncAndAsync ('should come back with error if type is String and enum is not an array.', { type: String, enum: 1 }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must be of type(s) Array.');
-	});
-	testSyncAndAsync ('should come back with error if type is String and enum has zero valus.', { type: String, enum: [] }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must have at least one item.');
-	});
-	testSyncAndAsync ('should come back with error if type is String and enum is not array of strings.', { type: String, enum: ['this','is',1,'test'] }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must be an array of strings.');
-	});
-	testSyncAndAsync ('should come back with error if schema type is unknown.', { type: Error }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type Error.');
-	});
-	testSyncAndAsync ('should come back with error if schema is not of supported type.', { type: RegExp }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type RegExp.');
-	});
-	testSyncAndAsync ('should come back with error if unknownKeys is not \'allow\', \'deny\' or \'remove\'.', { type: Object, unknownKeys: 'test' }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Validator \'unknownKeys\' must have value \'allow\', \'deny\' or \'remove\'.');
-	});
-	testSyncAndAsync ('should come back with error if array schema is unknown type.', { type: Array, schema: RegExp }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type RegExp.');
-	});
-	testSyncAndAsync ('should come back with error if object schema is unknown type.', { type: Object, schema: RegExp }, function(err, s) {
-		expect(err).instanceOf(SchemaError).property('message').equals('Object schemas must be an object.');
-	});
+	testSyncAndAsync (
+		'should come back with error if array shortcut contains no object.',
+		'should throw error if array shortcut contains no object.',
+		[],
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Array must have exactly one schema.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if schema is garbage value.',
+		'should throw error if schema is garbage value.',
+		123,
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type 123.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if required is not a String or Boolean.',
+		'should throw error if required is not a String or Boolean.',
+		{ type: String, required: 123 },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'required\' must be of type(s) Boolean, String.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if required is a String but not \'implicit\'.',
+		'should throw error if required is a String but not \'implicit\'.',
+		{ type: String, required: 'test' },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'required\' must be a Boolean or String of value \'implicit\'.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if type is String and match is non-RegExp.',
+		'should throw error if type is String and match is non-RegExp.',
+		{ type: String, match: 'test' },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'match\' must be of type(s) RegExp.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if type is String and enum is not an array.',
+		'should throw error if type is String and enum is not an array.',
+		{ type: String, enum: 1 },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must be of type(s) Array.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if type is String and enum has zero valus.',
+		'should throw error if type is String and enum has zero valus.',
+		{ type: String, enum: [] },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must have at least one item.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if type is String and enum is not array of strings.',
+		'should throw error if type is String and enum is not array of strings.',
+		{ type: String, enum: ['this','is',1,'test'] },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'enum\' must be an array of strings.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if schema type is unknown.',
+		'should throw error if schema type is unknown.',
+		{ type: Error },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type Error.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if schema is not of supported type.',
+		'should throw error if schema is not of supported type.',
+		{ type: RegExp },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type RegExp.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if unknownKeys is not \'allow\', \'deny\' or \'remove\'.',
+		'should throw error if unknownKeys is not \'allow\', \'deny\' or \'remove\'.',
+		{ type: Object, unknownKeys: 'test' },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'unknownKeys\' must have value \'allow\', \'deny\' or \'remove\'.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if array schema is unknown type.',
+		'should throw error if array schema is unknown type.',
+		{ type: Array, schema: RegExp },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Cannot validate schema of type RegExp.');
+		}
+	);
+	testSyncAndAsync (
+		'should come back with error if object schema is unknown type.',
+		'should throw error if object schema is unknown type.',
+		{ type: Object, schema: RegExp },
+		function(err, s) {
+			expect(err).instanceOf(SchemaError).property('message').equals('Object schemas must be an object.');
+		}
+	);
 	testSyncAndAsync ('should come back with an object shortcut expanded.', {}, function(err, s) {
 		expect(s).to.have.property('type');
 		expect(s).to.have.property('schema').to.be.an('Object');
@@ -150,7 +221,7 @@ describe('formalizer', function() {
 		expect(s).to.have.property('custom').to.be.an('array');
 	});
 	var d = new Date();
-	testSyncAndAsync ('should come back with non-JSON types as strings.', {
+	testSyncAndAsync ('should come back with error if transforming schema with functions to JSON.', {
 		myFirstKey: {
 			type: String,
 			match: /^[0-9]+$/,
@@ -163,6 +234,8 @@ describe('formalizer', function() {
 			custom: function() { return true; }
 		}
 	}, function(err, s) {
-		expect(JSON.stringify(s)).to.be.equal('{"type":"Object","schema":{"myFirstKey":{"type":"String","match":"/^[0-9]+$/"},"mySecondKey":{"type":"Date","default":"' + d.toString() + '"},"meThirdKey":{"custom":["function () { return true; }"]}}}');
+		expect(function() {
+			JSON.stringify(s);
+		}).to.throw(Error, 'Validators with functions cannot be transformed into JSON.');
 	});
 });
