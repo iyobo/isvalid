@@ -222,20 +222,22 @@ describe('formalizer', function() {
 	});
 	var d = new Date();
 	testSyncAndAsync ('should come back with error if transforming schema with functions to JSON.', {
-		myFirstKey: {
-			type: String,
-			match: /^[0-9]+$/,
-		},
-		mySecondKey: {
-			type: Date,
-			default: d
-		},
-		meThirdKey: {
+		myKey: {
 			custom: function() { return true; }
 		}
 	}, function(err, s) {
 		expect(function() {
 			JSON.stringify(s);
 		}).to.throw(Error, 'Validators with functions cannot be transformed into JSON.');
+	});
+	testSyncAndAsync ('should come back with JSON string when RegExp is in schema.', {
+		myKey: { type: String, match: /^.*?$/i }
+	}, function(err, s) {
+		expect(JSON.stringify(s)).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"String","match":"/^.*?$/i"}}}');
+	});
+	testSyncAndAsync ('should come back with JSON string when Date is in schema', {
+		myKey: { type: Date, default: d }
+	}, function(err, s) {
+		expect(JSON.stringify(s)).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"Date","default":"' + d.toString() + '"}}}');
 	});
 });
