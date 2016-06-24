@@ -17,12 +17,13 @@ var testSyncAndAsync = function(asyncDesc, syncDesc, s, expects) {
 		});
 	});
 	it ('[sync]	' + syncDesc, function() {
+		var err;
 		try {
 			s = formalize(s);
-			expects(null, s);
-		} catch (err) {
-			expects(err, null);
+		} catch (e) {
+			err = e;
 		}
+		expects(err, s);
 	});
 };
 
@@ -62,9 +63,9 @@ describe('formalizer', function() {
 	testSyncAndAsync (
 		'should come back with error if type is String and match is non-RegExp.',
 		'should throw error if type is String and match is non-RegExp.',
-		{ type: String, match: 'test' },
+		{ type: String, match: 123 },
 		function(err, s) {
-			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'match\' must be of type(s) RegExp.');
+			expect(err).instanceOf(SchemaError).property('message').equals('Validator \'match\' must be of type(s) RegExp, String.');
 		}
 	);
 	testSyncAndAsync (
@@ -230,14 +231,19 @@ describe('formalizer', function() {
 			JSON.stringify(s);
 		}).to.throw(Error, 'Validators with functions cannot be transformed into JSON.');
 	});
-	testSyncAndAsync ('should come back with JSON string when RegExp is in schema.', {
+	testSyncAndAsync ('should come back with JSON string when RegExp is in schema - and make it back to RegExp.', {
 		myKey: { type: String, match: /^.*?$/i }
 	}, function(err, s) {
-		expect(JSON.stringify(s)).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"String","match":"/^.*?$/i"}}}');
+		var json = JSON.stringify(s);
+		expect(json).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"String","match":"/^.*?$/i"}}}');
+		expect(formalize(JSON.parse(json)).schema.myKey.match.toString()).to.equal(/^.*?$/i.toString());
 	});
-	testSyncAndAsync ('should come back with JSON string when Date is in schema', {
+	d.setMilliseconds(0);
+	testSyncAndAsync ('should come back with JSON string when Date is in schema - and make it back to Date', {
 		myKey: { type: Date, default: d }
 	}, function(err, s) {
-		expect(JSON.stringify(s)).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"Date","default":"' + d.toString() + '"}}}');
+		var json = JSON.stringify(s);
+		expect(json).to.be.equal('{"type":"Object","schema":{"myKey":{"type":"Date","default":"' + d.toString() + '"}}}');
+		expect(formalize(JSON.parse(json)).schema.myKey.default.getTime()).to.equal(d.getTime());
 	});
 });
