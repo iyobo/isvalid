@@ -15,7 +15,7 @@ var request = require('supertest'),
 			});
 		});
 
-		it ('should come back with 200 if param matches schema.', function(done) {
+		it ('should come back with 200 if param matches schema (x100).', function(done) {
 			var completed = 0;
 			var callback = function(err, res) {
 				if (++completed == 100) done(err);
