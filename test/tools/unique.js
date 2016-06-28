@@ -2,7 +2,7 @@
 'use strict';
 
 var expect = require('chai').expect,
-	unique = require('../../lib/tools/unique.js');
+	unique = require('../../lib/tools.js').unique;
 
 var testSyncAndAsync = function(desc, arr, expects) {
 	it ('[async] ' + desc, function(done) {

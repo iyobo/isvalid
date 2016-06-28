@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect,
 	should = require('chai').should(),
-	testRange = require('../../lib/tools/test-range.js');
+	testRange = require('../../lib/tools.js').testRange;
 
 describe('ranges', function() {
 	it ('should throw an error if ranges is not a string.', function() {

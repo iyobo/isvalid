@@ -13,7 +13,7 @@ var commonTests = {
 			it ('should come back with an error if input is not a(n) ' + type.name + '.', function(done) {
 				isvalid(invalidData, type, function(err, validData) {
 					expect(validData).to.be.undefined;
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('type');
 					expect(err).to.have.property('message').equal('Is not of type ' + type.name + '.');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -38,7 +38,7 @@ var commonTests = {
 						}
 					}, function(err, validData) {
 						expect(validData).to.be.undefined;
-						expect(err).to.be.instanceof(ValidationError);
+						expect(err).to.be.instanceOf(ValidationError);
 						expect(err).to.have.property('validator').equal('type');
 						expect(err).to.have.property('message').equal('Type custom error message.');
 						expect(err).to.have.property('keyPath').of.length(0);
@@ -56,7 +56,7 @@ var commonTests = {
 					required: true
 				}, function(err, validData) {
 					expect(validData).to.be.undefined;
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('required');
 					expect(err).to.have.property('message').equal('Data is required.');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -70,6 +70,16 @@ var commonTests = {
 				}, function(err, validData) {
 					expect(err).to.be.null;
 					expect(validData).to.be.a(type.name);
+					done();
+				});
+			});
+			it ('should come back with no error if required is false and input is not preset', function(done) {
+				isvalid(undefined, {
+					type: type,
+					required: false
+				}, function(err, validData) {
+					expect(err).to.be.null;
+					expect(validData).to.be.undefined;
 					done();
 				});
 			});
@@ -100,9 +110,9 @@ var commonTests = {
 					required: true
 				}, function(err, validData) {
 					expect(validData).to.be.undefined;
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('allowNull');
-					expect(err).to.have.property('message').equal('Cannot be null.');
+					expect(err).to.have.property('message').equal('Data cannot be null.');
 					expect(err).to.have.property('keyPath').of.length(0);
 					done();
 				});
@@ -128,7 +138,7 @@ var commonTests = {
 						}
 					}, function(err, validData) {
 						expect(validData).to.be.undefined;
-						expect(err).to.be.instanceof(ValidationError);
+						expect(err).to.be.instanceOf(ValidationError);
 						expect(err).to.have.property('validator').equal('allowNull');
 						expect(err).to.have.property('message').equal('Allow null custom error message.');
 						expect(err).to.have.property('keyPath').of.length(0);
@@ -190,7 +200,7 @@ var commonTests = {
 						throw new Error('an error');
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('custom');
 					expect(err).to.have.property('message').equal('an error');
 					done();
@@ -211,7 +221,7 @@ var commonTests = {
 						fn(new Error('This is an error'));
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('custom');
 					expect(err).to.have.property('message').equal('This is an error');
 					done();
@@ -287,7 +297,7 @@ var commonTests = {
 						}
 					]
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('custom');
 					expect(err).to.have.property('message').equal('Stop here');
 					done();
@@ -329,7 +339,7 @@ describe('type conversion', function() {
 	});
 	it ('should come back with error if string is supplied - but not a number.', function(done) {
 		isvalid('abc', Number, function(err, validData) {
-			expect(err).to.be.instanceof(ValidationError);
+			expect(err).to.be.instanceOf(ValidationError);
 			expect(err).to.have.property('validator').equal('type');
 			expect(err).to.have.property('message').equal('Is not of type Number.');
 			done();
@@ -351,7 +361,7 @@ describe('type conversion', function() {
 	});
 	it ('should come back with error and if string is supplied - but not \'true\' or \'false\'.', function(done) {
 		isvalid('123', Boolean, function(err, validData) {
-			expect(err).to.be.instanceof(ValidationError);
+			expect(err).to.be.instanceOf(ValidationError);
 			expect(err).to.have.property('validator').equal('type');
 			expect(err).to.have.property('message').equal('Is not of type Boolean.');
 			done();
@@ -366,9 +376,9 @@ describe('type conversion', function() {
 	});
 	it ('should come back with error and if string is supplied - but not ISO date.', function(done) {
 		isvalid('19/10/14 2:24:42', Date, function(err, validData) {
-			expect(err).to.be.instanceof(ValidationError);
+			expect(err).to.be.instanceOf(ValidationError);
 			expect(err).to.have.property('validator').equal('type');
-			expect(err).to.have.property('message').equal('Is not a valid Date string.');
+			expect(err).to.have.property('message').equal('Date string must be in ISO-8601 format.');
 			done();
 		});
 	});
@@ -413,18 +423,6 @@ describe('object validator', function() {
 				done();
 			});
 		});
-		it ('should come back with unknown keys intact if unknownKeys is provided as \'allow\' in options.', function(done) {
-			isvalid({
-				awesome: true,
-				why: 'It just is!'
-			}, {
-				awesome: Boolean
-			}, function(err, validData) {
-				expect(err).to.be.null;
-				expect(validData).to.have.property('why').equals('It just is!');
-				done();
-			}, { unknownKeys: 'allow' });
-		});
 		it ('should come back with error if there are unknown keys and unknownKeys is not set.', function(done) {
 			isvalid({
 				awesome: true,
@@ -432,7 +430,7 @@ describe('object validator', function() {
 			}, {
 				awesome: Boolean
 			}, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('unknownKeys');
 				expect(err).to.have.property('message').equal('Unknown key.');
 				expect(err).to.have.property('keyPath').of.length(1);
@@ -450,7 +448,7 @@ describe('object validator', function() {
 					awesome: Boolean
 				}
 			}, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('unknownKeys');
 				expect(err).to.have.property('message').equal('Unknown key.');
 				expect(err).to.have.property('keyPath').of.length(1);
@@ -487,7 +485,7 @@ describe('object validator', function() {
 						unknownKeys: 'Not allowed.'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('unknownKeys');
 					expect(err).to.have.property('message').equal('Not allowed.');
 					expect(err).to.have.property('keyPath').of.length(1);
@@ -539,7 +537,7 @@ describe('array validator', function() {
 				len: '2-',
 				schema: {}
 			}, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('len');
 				expect(err).to.have.property('message').equal('Array length is not within range of \'2-\'.');
 				expect(err).to.have.property('keyPath').of.length(0);
@@ -556,7 +554,7 @@ describe('array validator', function() {
 						len: 'Not within range.'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('len');
 					expect(err).to.have.property('message').equal('Not within range.');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -576,7 +574,7 @@ describe('array validator', function() {
 				unique: true,
 				schema: { awesome: Boolean }
 			}, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('unique');
 				expect(err).to.have.property('message').equal('Array is not unique.');
 				expect(err).to.have.property('keyPath').of.length(0);
@@ -608,7 +606,7 @@ describe('array validator', function() {
 						unique: 'Not a set.'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('unique');
 					expect(err).to.have.property('message').equal('Not a set.');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -635,18 +633,11 @@ describe('string validator', function() {
 				done();
 			});
 		});
-		it ('should come back with trimmed string when trim option is true.', function(done) {
-			isvalid('	123abc	', String, function(err, validData) {
-				expect(err).to.be.null;
-				expect(validData).to.equal('123abc');
-				done();
-			}, { trim: true });
-		});
 	});
 	describe('match', function() {
 		it ('should come back with an error if string does not match RegExp.', function(done) {
 			isvalid('123', { type: String, match: /^[a-z]+$/ }, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('match');
 				expect(err).to.have.property('message').equal('Does not match expression ^[a-z]+$.');
 				expect(err).to.have.property('keyPath').of.length(0);
@@ -668,7 +659,7 @@ describe('string validator', function() {
 						match: 'Must be a string of letters from a to z.'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('match');
 					expect(err).to.have.property('message').equal('Must be a string of letters from a to z.');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -680,9 +671,9 @@ describe('string validator', function() {
 	describe('enum', function() {
 		it ('should come back with an error if string is not in enum.', function(done) {
 			isvalid('123', { type: String, enum: ['this','is','a','test'] }, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('enum');
-				expect(err).to.have.property('message').equal('Possible values are "this", "is", "a" and "test".');
+				expect(err).to.have.property('message').equal('Possible values are \'this\', \'is\', \'a\' and \'test\'.');
 				expect(err).to.have.property('keyPath').of.length(0);
 				done();
 			});
@@ -703,7 +694,7 @@ describe('string validator', function() {
 						enum: 'Must be a word from the sentence "this is a test".'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('enum');
 					expect(err).to.have.property('message').equal('Must be a word from the sentence "this is a test".');
 					expect(err).to.have.property('keyPath').of.length(0);
@@ -725,9 +716,9 @@ describe('number validator', function() {
 	describe('range', function() {
 		it ('should come back with error if input is not within range.', function(done) {
 			isvalid(1, { type: Number, range: '2-4' }, function(err, validData) {
-				expect(err).to.be.instanceof(ValidationError);
+				expect(err).to.be.instanceOf(ValidationError);
 				expect(err).to.have.property('validator').equal('range');
-				expect(err).to.have.property('message').equal('Not within range of 2-4');
+				expect(err).to.have.property('message').equal('Not within range of 2-4.');
 				expect(err).to.have.property('keyPath').of.length(0);
 				done();
 			});
@@ -748,7 +739,7 @@ describe('number validator', function() {
 						range: 'Must be between 2 and 4.'
 					}
 				}, function(err, validData) {
-					expect(err).to.be.instanceof(ValidationError);
+					expect(err).to.be.instanceOf(ValidationError);
 					expect(err).to.have.property('validator').equal('range');
 					expect(err).to.have.property('message').equal('Must be between 2 and 4.');
 					expect(err).to.have.property('keyPath').of.length(0);

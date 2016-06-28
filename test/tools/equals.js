@@ -2,7 +2,7 @@
 'use strict';
 
 var expect = require('chai').expect,
-	equals = require('../../lib/tools/equals.js');
+	equals = require('../../lib/tools.js').equals;
 
 var testSyncAndAsync = function(desc, s1, s2, expects) {
 	it ('[async] ' + desc, function(done) {
